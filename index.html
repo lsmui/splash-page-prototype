@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Think+ Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+/* ─── Reckless Neue ──────────────────────────────────────────── */
+@font-face {
+  font-family: 'Reckless Neue';
+  src: url('fonts/RecklessNeue-Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal;
+}
+@font-face {
+  font-family: 'Reckless Neue';
+  src: url('fonts/RecklessNeue-Bold.otf') format('opentype');
+  font-weight: 700; font-style: normal;
+}
+@font-face {
+  font-family: 'Reckless Neue';
+  src: url('fonts/RecklessNeue-Book.otf') format('opentype');
+  font-weight: 350; font-style: normal;
+}
+@font-face {
+  font-family: 'Reckless Neue';
+  src: url('fonts/RecklessNeue-BookItalic.otf') format('opentype');
+  font-weight: 350; font-style: italic;
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+/* ─── Screen system ──────────────────────────────────────────── */
+#app { position: fixed; inset: 0; }
+
+.screen {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 1: LOGIN
+═══════════════════════════════════════════════════════════════ */
+#screen-login {
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Left panel ─────────────────────────────────────────────── */
+.login-left {
+  position: relative;
+  flex: 0 0 55%;
+  background: #000;
+  overflow: hidden;
+}
+
+/* Photo collage grid */
+.photo-collage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  opacity: 0.4;
+}
+
+.photo-cell {
+  overflow: hidden;
+}
+
+.photo-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(100%);
+  mask-image: url('https://www.figma.com/api/mcp/asset/862d98d3-84dc-4621-8b8b-60fcd5fbfdb2');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: url('https://www.figma.com/api/mcp/asset/862d98d3-84dc-4621-8b8b-60fcd5fbfdb2');
+  -webkit-mask-size: cover;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* Dark overlay */
+.login-left-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+}
+
+/* Hero text */
+.login-hero {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-50% - 134px));
+  max-width: 659px;
+  width: 90%;
+  text-align: center;
+}
+
+.login-hero-title {
+  font-family: 'Reckless Neue', serif;
+  font-weight: 700;
+  font-size: clamp(40px, 5vw, 72px);
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.login-hero-subtitle {
+  font-family: 'Reckless Neue', serif;
+  font-weight: 350;
+  font-style: italic;
+  font-size: clamp(20px, 2.5vw, 36px);
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-top: 20px;
+}
+
+/* Logo */
+.login-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 175px);
+}
+
+.login-logo img {
+  height: 70px;
+  display: block;
+}
+
+/* ── Right panel ────────────────────────────────────────────── */
+.login-right {
+  flex: 0 0 45%;
+  background: #FAFAFA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  overflow-y: auto;
+}
+
+.login-form-col {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form-title {
+  font-family: 'Reckless Neue', serif;
+  font-weight: 400;
+  font-size: clamp(24px, 2.5vw, 36px);
+  color: #000;
+  letter-spacing: -0.5px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* Credentials card */
+.credentials-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(102,102,102,0.4);
+  padding: clamp(24px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.field-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #000;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  height: 34px;
+  border: 1px solid #000;
+  width: 100%;
+  outline: none;
+  padding: 0 8px;
+  font: 16px 'IBM Plex Sans', sans-serif;
+  background: #fff;
+}
+
+.field-input:focus {
+  outline: 2px solid #000;
+  outline-offset: 1px;
+}
+
+.continue-btn {
+  background: #000;
+  color: #fff;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  height: 40px;
+  border-radius: 8px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  transition: background 0.15s ease;
+}
+
+.continue-btn:hover {
+  background: #1a1a1a;
+}
+
+.help-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #737373;
+  text-align: right;
+  cursor: pointer;
+}
+
+/* Below card */
+.login-below-card {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.no-account-heading {
+  font-family: 'Reckless Neue', serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+  color: #000;
+  display: block;
+}
+
+.no-account-sub {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #737373;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ── Mobile: Login ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  #screen-login {
+    flex-direction: column;
+  }
+
+  .login-left {
+    flex: 0 0 220px;
+    height: 220px;
+    width: 100%;
+  }
+
+  .login-hero {
+    transform: translate(-50%, calc(-50% - 30px));
+    width: 88%;
+  }
+
+  .login-hero-title {
+    font-size: clamp(24px, 7vw, 40px);
+  }
+
+  .login-hero-subtitle {
+    font-size: clamp(14px, 4vw, 20px);
+    margin-top: 12px;
+  }
+
+  .login-logo {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    top: auto;
+    transform: translateX(-50%);
+  }
+
+  .login-logo img {
+    height: 44px;
+  }
+
+  .login-right {
+    flex: 1 1 auto;
+    align-items: flex-start;
+    padding: 32px 20px;
+  }
+
+  .login-form-col {
+    max-width: 100%;
+  }
+}
+
+/* ── Tablet: Login ──────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .credentials-card {
+    padding: 24px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 2: SPLASH
+═══════════════════════════════════════════════════════════════ */
+#screen-splash {
+  background: #000;
+  overflow: hidden;
+}
+
+/* Grid layer */
+#splash-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  opacity: 0.6;
+}
+
+.grid-cell {
+  border-right: 0.7px solid #525252;
+  border-bottom: 0.7px solid #525252;
+  opacity: 0;
+}
+
+/* Gradient layer */
+#grad-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#blob-1 {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(28,159,254,.22) 0%, rgba(2,27,135,.48) 24%, rgba(2,27,135,.26) 50%, transparent 70%);
+}
+
+#blob-2 {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(28,159,254,.18) 0%, rgba(2,27,135,.42) 24%, rgba(2,27,135,.2) 50%, transparent 70%);
+}
+
+/* Splash content */
+#splash-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 5vh, 80px);
+  padding: 40px 24px;
+  text-align: center;
+}
+
+#el-video {
+  width: 100%;
+  max-width: min(720px, 85vw);
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+  opacity: 0;
+  position: relative;
+}
+
+/* ── JW Player simulation ─────────────────────────────────── */
+.jwp-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+#el-video:hover .jwp-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.jwp-top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.jwp-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.65));
+  padding: 28px 10px 8px;
+}
+.jwp-progress-track {
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  margin-bottom: 7px;
+  cursor: pointer;
+  position: relative;
+}
+.jwp-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.jwp-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+}
+.jwp-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.88);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.12s, color 0.12s;
+}
+.jwp-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.jwp-btn.active { color: #fff; }
+.jwp-cc-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  padding: 1px 3px;
+}
+/* Settings popup */
+.jwp-settings-panel {
+  position: absolute;
+  bottom: 44px;
+  right: 8px;
+  background: rgba(20,20,20,0.95);
+  border-radius: 6px;
+  padding: 6px 0;
+  min-width: 160px;
+  display: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.jwp-settings-panel.open { display: block; }
+.jwp-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  gap: 24px;
+}
+.jwp-setting-row:hover { background: rgba(255,255,255,0.08); }
+.jwp-setting-row span { color: rgba(255,255,255,0.45); font-size: 12px; }
+
+#el-head {
+  opacity: 0;
+  transform: translateY(14px);
+  font-family: 'Reckless Neue', serif;
+  font-weight: 400;
+  font-style: normal;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  font-size: clamp(20px, 2.5vw, 36px);
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  max-width: min(720px, 85vw);
+  white-space: pre-line;
+}
+
+#el-cta {
+  opacity: 0;
+  transform: translateY(14px);
+  background: #FBC435;
+  color: #000;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+#el-cta:hover {
+  background: #ffd060;
+}
+
+/* Exit overlay */
+#exit-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 3: HOME
+═══════════════════════════════════════════════════════════════ */
+#screen-home {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Nav */
+.home-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #000;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+.home-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1392px;
+  margin: 0 auto;
+}
+.home-nav-logo { height: 40px; width: 197.5px; object-fit: contain; flex-shrink: 0; }
+.home-nav-menu { display: flex; align-items: center; gap: 20px; }
+.home-nav-item {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #d4d4d4;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 2px;
+}
+.home-nav-icons { display: flex; align-items: center; gap: 16px; }
+.home-nav-icons svg { cursor: pointer; }
+
+/* Search bar */
+.home-search-bar {
+  position: sticky;
+  top: 72px;
+  z-index: 99;
+  background: #fff;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 6px 10px -4px rgba(82,82,82,0.2), 0 3px 20px rgba(82,82,82,0.1), 0 4px 8px rgba(82,82,82,0.02);
+  flex-shrink: 0;
+}
+.home-search-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1392px;
+  margin: 0 auto;
+}
+.home-search-pill {
+  background: #f5f5f5;
+  border-radius: 100px;
+  height: 44px;
+  width: 440px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  cursor: text;
+}
+.home-search-pill span {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #737373;
+  line-height: 24px;
+}
+
+/* Content area */
+.home-content { background: #fff; padding: 24px; flex: 1; }
+.home-content-inner { max-width: 1392px; margin: 0 auto; }
+
+/* Carousel */
+.h-carousel { margin-bottom: 48px; }
+.h-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  margin-bottom: 16px;
+}
+.h-carousel-title {
+  font-family: 'Reckless Neue', serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: #000;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.h-carousel-seemore {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.h-carousel-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+@media (max-width: 1100px) {
+  .h-carousel-cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .h-carousel-cards { display: flex; overflow-x: auto; gap: 16px; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+  .h-card { flex-shrink: 0; width: 260px; scroll-snap-align: start; }
+  .home-nav-menu { display: none; }
+  .home-search-pill { width: 100%; }
+}
+
+/* Content card */
+.h-card {
+  background: #262626;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.h-card-thumb {
+  width: 100%;
+  aspect-ratio: 327 / 184;
+  overflow: hidden;
+  background: #e5e5e5;
+  flex-shrink: 0;
+}
+.h-card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+.h-card-details { padding: 24px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.h-card-eyebrow {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.h-card-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  line-height: 24px;
+}
+.h-card-author {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #fff;
+  line-height: 16px;
+  margin-top: auto;
+}
+.h-card-bio {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #e5e5e5;
+  line-height: 16px;
+}
+.h-card-duration {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #e5e5e5;
+  line-height: 16px;
+}
+
+/* Footer */
+.home-footer {
+  background: #000;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+.home-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1392px;
+  margin: 0 auto;
+}
+.home-footer-left { display: flex; align-items: center; gap: 24px; }
+.home-footer-right { display: flex; align-items: center; gap: 24px; }
+.home-footer-copy {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #d4d4d4;
+  white-space: nowrap;
+}
+.home-footer-link {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #d4d4d4;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  .home-footer-left .home-footer-copy:first-child { display: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="icon-clock" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.33" stroke="#e5e5e5" stroke-width="1.33"/>
+      <path d="M8 5v3l2 2" stroke="#e5e5e5" stroke-width="1.33" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ══════════════════════════════════
+       SCREEN 1: LOGIN
+  ══════════════════════════════════ -->
+  <div id="screen-login" class="screen active">
+
+    <!-- Left panel -->
+    <div class="login-left">
+      <!-- Photo collage -->
+      <div class="photo-collage">
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/8b58c46b-e67f-4e0e-99a6-d827e284265c" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/cd8fa4e5-cfe9-4649-abd6-38a14a26f0a2" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/4f39fbda-6161-40bd-b375-bb7959c15533" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/5349583a-051d-4d47-bb4b-066dc0246a0b" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/1b01e4ee-3970-4769-b704-d2e46b1ae9f4" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/335ab883-7b54-4830-8f7f-238af2ccf8bd" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/278b84c7-311d-4053-b85d-df36fff2b862" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/e9793fcf-5bc1-4d75-90ed-d5fe188b46fa" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/8476e1b9-56ef-40ec-8e8b-ea4350c6c1d2" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/65277324-b673-4894-9f54-0ab0a278c5fc" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/6dc3f901-d966-412d-aaa8-111a2160de99" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/86be3c40-9e28-427f-a1da-758a187b4367" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/04adc31d-48c7-402c-8891-f7ba20761962" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/ade4023f-5d70-4fcd-8350-e3bc411286a2" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/384a7337-fe89-4d44-a95c-a508fe734766" alt=""></div>
+        <div class="photo-cell"><img src="https://www.figma.com/api/mcp/asset/5e1c816e-f9fd-4c63-9a2d-880e093dc8ea" alt=""></div>
+      </div>
+
+      <!-- Dark overlay -->
+      <div class="login-left-overlay"></div>
+
+      <!-- Hero text -->
+      <div class="login-hero">
+        <div class="login-hero-title">Level up as a leader</div>
+        <div class="login-hero-subtitle">with the world's biggest thinkers.</div>
+      </div>
+
+      <!-- Logo -->
+      <div class="login-logo">
+        <img src="https://www.figma.com/api/mcp/asset/aa03d962-dc84-434c-a8a5-66c23b89b8f1" alt="Big Think+">
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="login-right">
+      <div class="login-form-col">
+        <div class="login-form-title">Sign in to your account</div>
+
+        <div class="credentials-card">
+          <div>
+            <label class="field-label" for="email-input">Email address or User ID</label>
+            <input type="text" id="email-input" class="field-input" autocomplete="off">
+          </div>
+
+          <button class="continue-btn" id="continue-btn" type="button">
+            <span>Continue</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="help-text">Need help?</div>
+        </div>
+
+        <div class="login-below-card">
+          <span class="no-account-heading">Don't have an account?</span>
+          <span class="no-account-sub">Learn how Big Think+ can empower your team.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen-login -->
+
+
+  <!-- ══════════════════════════════════
+       SCREEN 2: SPLASH
+  ══════════════════════════════════ -->
+  <div id="screen-splash" class="screen">
+
+    <!-- 1. Grid layer -->
+    <div id="splash-grid"></div>
+
+    <!-- 2. Gradient layer -->
+    <div id="grad-layer">
+      <div id="blob-1"></div>
+      <div id="blob-2"></div>
+    </div>
+
+    <!-- 3. Splash content -->
+    <div id="splash-content">
+      <div id="el-video">
+        <video id="splash-video" muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"
+          src="splash page video small.mp4">
+        </video>
+
+        <!-- JW Player simulation overlay -->
+        <div class="jwp-overlay">
+
+          <!-- Settings gear — top right -->
+          <div class="jwp-top-right">
+            <button class="jwp-btn" id="jwp-settings-btn" title="Settings" onclick="toggleJwpSettings(event)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1.06 1.06M14.84 14.84l1.06 1.06M4.1 15.9l1.06-1.06M14.84 5.16l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <!-- Settings panel -->
+            <div class="jwp-settings-panel" id="jwp-settings-panel">
+              <div class="jwp-setting-row">Quality <span>Auto</span></div>
+              <div class="jwp-setting-row">Playback Speed <span>1x</span></div>
+              <div class="jwp-setting-row">Captions <span>Off</span></div>
+            </div>
+          </div>
+
+          <!-- Bottom bar -->
+          <div class="jwp-bottom">
+            <div class="jwp-progress-track" id="jwp-progress-track">
+              <div class="jwp-progress-fill" id="jwp-progress-fill"></div>
+            </div>
+            <div class="jwp-controls-row">
+              <!-- Closed captions -->
+              <button class="jwp-btn" id="jwp-cc-btn" title="Closed Captions" onclick="toggleCC()">
+                <span class="jwp-cc-label">CC</span>
+              </button>
+              <!-- PiP -->
+              <button class="jwp-btn" title="Picture in Picture" onclick="togglePiP()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <rect x="2" y="4" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <rect x="10" y="10" width="7" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </button>
+              <!-- Fullscreen -->
+              <button class="jwp-btn" title="Fullscreen" onclick="toggleFullscreen()">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 7.5V3h4.5M16.5 3H12.5v4.5M3 12.5V17h4.5M16.5 17H12.5v-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="el-head">All your leadership questions,
+answered by the world's biggest thinkers.</div>
+
+      <button id="el-cta" type="button">Get started now</button>
+    </div>
+
+    <!-- 4. Exit overlay -->
+    <div id="exit-overlay"></div>
+
+  </div><!-- /screen-splash -->
+
+
+  <!-- ══════════════════════════════════
+       SCREEN 3: HOME
+  ══════════════════════════════════ -->
+  <div id="screen-home" class="screen">
+
+    <!-- Nav -->
+    <nav class="home-nav">
+      <div class="home-nav-inner">
+        <img class="home-nav-logo" src="https://www.figma.com/api/mcp/asset/22a3ea29-9e65-43f6-ad9c-42e1c26f5572" alt="Big Think+">
+        <div class="home-nav-menu">
+          <a class="home-nav-item">BROWSE <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#d4d4d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="home-nav-item">EXPERTS</a>
+          <a class="home-nav-item">CURATIONS</a>
+          <a class="home-nav-item">ANALYTICS</a>
+          <a class="home-nav-item"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.67" stroke="#d4d4d4" stroke-width="1.33"/><path d="M8 1.33C6.17 3.5 5 5.67 5 8s1.17 4.5 3 6.67M8 1.33C9.83 3.5 11 5.67 11 8s-1.17 4.5-3 6.67M1.33 8h13.34" stroke="#d4d4d4" stroke-width="1.33"/></svg> EN <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#d4d4d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <div class="home-nav-icons">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#d4d4d4" stroke-width="1.5"/><circle cx="12" cy="10" r="3" stroke="#d4d4d4" stroke-width="1.5"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#d4d4d4" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#d4d4d4" stroke-width="1.5"/><circle cx="12" cy="17" r="1" fill="#d4d4d4"/><path d="M12 13v-1c0-2 2-2 2-4a2 2 0 0 0-4 0" stroke="#d4d4d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Search bar -->
+    <div class="home-search-bar">
+      <div class="home-search-inner">
+        <div class="home-search-pill">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#737373" stroke-width="1.5"/><path d="m16 16 4 4" stroke="#737373" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Search for experts, topics, or answers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="home-content">
+      <div class="home-content-inner">
+
+        <!-- Carousel 1: Newest expert classes -->
+        <div class="h-carousel">
+          <div class="h-carousel-header">
+            <h2 class="h-carousel-title">Newest expert classes</h2>
+            <a class="h-carousel-seemore">See more <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><path d="M9 4l4 4-4 4" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+          <div class="h-carousel-cards">
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/92bb0ac6-dfaa-41b2-bc81-c3ef4e9bdbe8" alt="Atul Gawande"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Leadership Lessons from the Operating Room</p>
+                <p class="h-card-author">Atul Gawande</p>
+                <p class="h-card-bio">Surgeon, Public Health Researcher, and Author</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 39m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/39fe3800-cec7-44a9-8165-b210b1aa6ac3" alt="Adam Grant"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">The Science of Rethinking Your Assumptions</p>
+                <p class="h-card-author">Adam Grant</p>
+                <p class="h-card-bio">Organizational Psychologist, Wharton School of Business</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>2h 12m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/fd971163-e006-415b-a9b2-45e8a179d132" alt="Amy Edmondson"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Building Psychological Safety on Your Team</p>
+                <p class="h-card-author">Amy Edmondson</p>
+                <p class="h-card-bio">Novartis Professor of Leadership, Harvard Business School</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 55m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/109ac8a8-4b5a-49e7-a5d5-e44add6046a9" alt="Cal Newport"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Deep Work in the Age of Distraction</p>
+                <p class="h-card-author">Cal Newport</p>
+                <p class="h-card-bio">Computer Scientist and Author of Deep Work and Digital Minimalism</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 48m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel 2: Popular insights -->
+        <div class="h-carousel">
+          <div class="h-carousel-header">
+            <h2 class="h-carousel-title">Popular insights you can use right away</h2>
+            <a class="h-carousel-seemore">See more <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><path d="M9 4l4 4-4 4" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+          <div class="h-carousel-cards">
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/840f111d-3f36-4a20-af9b-881acc10fdd3" alt="Priya Parker"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">INSIGHT</span>
+                <p class="h-card-title">The Art of Gathering People Around a Purpose</p>
+                <p class="h-card-author">Priya Parker</p>
+                <p class="h-card-bio">Author, The Art of Gathering</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>42m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/934c66bc-4491-442c-a47b-8936575e964a" alt="Monica Parker"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">INSIGHT</span>
+                <p class="h-card-title">Human-Centered Leadership in Uncertain Times</p>
+                <p class="h-card-author">Monica Parker</p>
+                <p class="h-card-bio">Founder, HATCH Analytics</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>38m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/0049a6e5-6dcd-4cb8-8672-b1c76ea3f0d5" alt="Ethan Mollick"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">INSIGHT</span>
+                <p class="h-card-title">Co-Intelligence: Working and Thinking with AI</p>
+                <p class="h-card-author">Ethan Mollick</p>
+                <p class="h-card-bio">Associate Professor, The Wharton School</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>51m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/e5971471-a249-4f2f-840d-858afc881a8e" alt="Cassandra Worthy"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">INSIGHT</span>
+                <p class="h-card-title">Change Enthusiasm: Thriving Through Disruption</p>
+                <p class="h-card-author">Cassandra Worthy</p>
+                <p class="h-card-bio">Change Enthusiast, Author, and Keynote Speaker</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>35m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel 3: Recommended -->
+        <div class="h-carousel">
+          <div class="h-carousel-header">
+            <h2 class="h-carousel-title">Recommended based on your interests</h2>
+            <a class="h-carousel-seemore">See more <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><path d="M9 4l4 4-4 4" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+          <div class="h-carousel-cards">
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/b577ab4b-1d4b-4c5d-97a4-058d768bae43" alt="Yuval Noah Harari"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">The Future of Intelligence: Human and Artificial</p>
+                <p class="h-card-author">Yuval Noah Harari</p>
+                <p class="h-card-bio">Historian and Author, Sapiens and Homo Deus</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>2h 8m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/d5c61d18-45c7-44be-b0fb-702c86d11a19" alt="Daniel Goleman"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Emotional Intelligence for High-Stakes Leadership</p>
+                <p class="h-card-author">Daniel Goleman</p>
+                <p class="h-card-bio">Psychologist and Author, Emotional Intelligence</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 52m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/9bfac771-de39-4ab6-8770-b594b2bbc50c" alt="Alisa Cohn"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Executive Presence: Lead with Authority and Empathy</p>
+                <p class="h-card-author">Alisa Cohn</p>
+                <p class="h-card-bio">Executive Coach, Forbes Top 50 Coaches</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>58m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/cca04a64-6fb2-4b7a-9e4c-324489fb22db" alt="Ginni Rometty"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">EXPERT CLASS</span>
+                <p class="h-card-title">Good Power: Leading with Purpose and Courage</p>
+                <p class="h-card-author">Ginni Rometty</p>
+                <p class="h-card-bio">Former Chairman, President, and CEO, IBM</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 25m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel 4: Build mastery -->
+        <div class="h-carousel">
+          <div class="h-carousel-header">
+            <h2 class="h-carousel-title">Build mastery through guided courses</h2>
+            <a class="h-carousel-seemore">See more <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><path d="M9 4l4 4-4 4" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+          <div class="h-carousel-cards">
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/eedfac5c-8b40-44c5-bf6a-6bbd019a167c" alt="Jefferson Fisher"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">COURSE</span>
+                <p class="h-card-title">Mastering Difficult Conversations</p>
+                <p class="h-card-author">Jefferson Fisher</p>
+                <p class="h-card-bio">Trial Lawyer and Communication Expert</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>3h 20m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/1f1bf8a4-3d6f-4386-9730-5bbeedad5244" alt="John Amaechi"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">COURSE</span>
+                <p class="h-card-title">Achieving Remarkable Things as a Leader</p>
+                <p class="h-card-author">John Amaechi</p>
+                <p class="h-card-bio">Former NBA Player, Professor at the University of Exeter</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>2h 45m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/a8819cc1-9d7e-4fcb-b595-2d26a1638765" alt="Ben Horowitz"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">COURSE</span>
+                <p class="h-card-title">The Hard Thing About Hard Things</p>
+                <p class="h-card-author">Ben Horowitz</p>
+                <p class="h-card-bio">Co-Founder and General Partner, Andreessen Horowitz</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>2h 10m</div>
+              </div>
+            </div>
+            <div class="h-card">
+              <div class="h-card-thumb"><img src="https://www.figma.com/api/mcp/asset/faa8ec93-2979-4ba4-a09d-25646853ec1b" alt="Debbie Millman"></div>
+              <div class="h-card-details">
+                <span class="h-card-eyebrow">COURSE</span>
+                <p class="h-card-title">Creative Leadership and Design Thinking</p>
+                <p class="h-card-author">Debbie Millman</p>
+                <p class="h-card-bio">President Emeritus, AIGA, and Host of Design Matters</p>
+                <div class="h-card-duration"><svg width="16" height="16"><use href="#icon-clock"/></svg>1h 55m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+      <div class="home-footer-inner">
+        <div class="home-footer-left">
+          <span class="home-footer-copy">ICP No. 2023010838-7</span>
+          <span class="home-footer-copy">© 2025 Freethink Media, Inc. All rights reserved.</span>
+        </div>
+        <div class="home-footer-right">
+          <a class="home-footer-link">Submit Feedback</a>
+          <a class="home-footer-link">Help Center</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+</div><!-- /app -->
+
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   GRID BUILD
+═══════════════════════════════════════════════════════════════ */
+const ROWS = 8, COLS = 12;
+const gridEl = document.getElementById('splash-grid');
+const cells = [];
+
+for (let r = 0; r < ROWS; r++) {
+  for (let c = 0; c < COLS; c++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    cell.dataset.r = r;
+    cell.dataset.c = c;
+    gridEl.appendChild(cell);
+    cells.push(cell);
+  }
+}
+
+/* ── Cached DOM refs ─────────────────────────────────────────── */
+const gradLayer = document.getElementById('grad-layer');
+const elVideo   = document.getElementById('el-video');
+const elHead    = document.getElementById('el-head');
+const elCta     = document.getElementById('el-cta');
+const exitOv    = document.getElementById('exit-overlay');
+const blob1     = document.getElementById('blob-1');
+const blob2     = document.getElementById('blob-2');
+const splashVid = document.getElementById('splash-video');
+const progressFill  = document.getElementById('jwp-progress-fill');
+const progressTrack = document.getElementById('jwp-progress-track');
+const settingsPanel = document.getElementById('jwp-settings-panel');
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ORBIT SYSTEM
+═══════════════════════════════════════════════════════════════ */
+const ORBIT_DURATION = 40000;
+
+function getBlobSize() {
+  return Math.min(Math.max(Math.hypot(window.innerWidth, window.innerHeight) * 0.72, 600), 1600);
+}
+
+function getOrbitParams() {
+  const size = getBlobSize();
+  const r = size / 2;
+  const rx = window.innerWidth / 2 + r * 0.67;
+  const ry = window.innerHeight / 2 + r * 0.67;
+  return { size, r, rx, ry };
+}
+
+function ellipsePoint(pct, rx, ry) {
+  const angle = pct * Math.PI * 2;
+  return [Math.cos(angle) * rx, Math.sin(angle) * ry];
+}
+
+let orbitRAF = null, orbitStartTime = null;
+
+function orbitFrame(ts) {
+  if (!orbitStartTime) orbitStartTime = ts;
+  const pct1 = ((ts - orbitStartTime) / ORBIT_DURATION) % 1;
+  const pct2 = (pct1 + 0.5) % 1;
+
+  const { size, rx, ry } = getOrbitParams();
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+
+  const [dx1, dy1] = ellipsePoint(pct1, rx, ry);
+  const [dx2, dy2] = ellipsePoint(pct2, rx, ry);
+
+  const b1 = document.getElementById('blob-1');
+  const b2 = document.getElementById('blob-2');
+  const blur = Math.min(72, size * 0.08);
+
+  for (const [el, dx, dy] of [[b1,dx1,dy1],[b2,dx2,dy2]]) {
+    el.style.width = el.style.height = size + 'px';
+    el.style.left = (cx + dx - size/2) + 'px';
+    el.style.top  = (cy + dy - size/2) + 'px';
+    el.style.filter = `blur(${blur}px)`;
+  }
+
+  orbitRAF = requestAnimationFrame(orbitFrame);
+}
+
+function startOrbit() {
+  if (orbitRAF) cancelAnimationFrame(orbitRAF);
+  orbitStartTime = null;
+  orbitRAF = requestAnimationFrame(orbitFrame);
+}
+
+function stopOrbit() {
+  if (orbitRAF) { cancelAnimationFrame(orbitRAF); orbitRAF = null; }
+  orbitStartTime = null;
+}
+
+
+/* ─── Blob helpers ───────────────────────────────────────────── */
+function setBlobsAtCenter() {
+  const { size } = getOrbitParams();
+  const cx = window.innerWidth/2, cy = window.innerHeight/2;
+  const blur = Math.min(72, size * 0.08);
+  for (const id of ['blob-1','blob-2']) {
+    const el = document.getElementById(id);
+    el.style.transition = 'none';
+    el.style.width = el.style.height = size + 'px';
+    el.style.left = (cx - size/2) + 'px';
+    el.style.top  = (cy - size/2) + 'px';
+    el.style.filter = `blur(${blur}px)`;
+  }
+}
+
+function bloomBlobsToOrbit(easeCss, durationMs, onDone) {
+  const { size, rx, ry } = getOrbitParams();
+  const cx = window.innerWidth/2, cy = window.innerHeight/2;
+  const [dx1, dy1] = ellipsePoint(0,   rx, ry);
+  const [dx2, dy2] = ellipsePoint(0.5, rx, ry);
+  const tr = `left ${durationMs}ms ${easeCss}, top ${durationMs}ms ${easeCss}`;
+  blob1.style.transition = tr;
+  blob2.style.transition = tr;
+  blob1.style.left = (cx+dx1-size/2)+'px'; blob1.style.top = (cy+dy1-size/2)+'px';
+  blob2.style.left = (cx+dx2-size/2)+'px'; blob2.style.top = (cy+dy2-size/2)+'px';
+  splashTimeout(() => {
+    blob1.style.transition = 'none';
+    blob2.style.transition = 'none';
+    onDone();
+  }, durationMs + 20);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TIMER MANAGEMENT
+═══════════════════════════════════════════════════════════════ */
+let splashTimers = [];
+
+function splashTimeout(fn, ms) {
+  const id = setTimeout(fn, ms);
+  splashTimers.push(id);
+  return id;
+}
+
+function clearSplashTimers() {
+  splashTimers.forEach(id => clearTimeout(id));
+  splashTimers = [];
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET SPLASH
+═══════════════════════════════════════════════════════════════ */
+function resetSplash() {
+  stopOrbit();
+  clearSplashTimers();
+
+  // Grid cells
+  cells.forEach(cell => {
+    cell.style.transition = 'none';
+    cell.style.opacity = '0';
+  });
+
+  // Grad layer
+  gradLayer.style.transition = 'none';
+  gradLayer.style.opacity = '0';
+
+  // Blobs
+  setBlobsAtCenter();
+
+  // Content elements
+  elVideo.style.transition = 'none';
+  elVideo.style.opacity = '0';
+  elVideo.style.transform = 'translateY(14px)';
+  splashVid.pause(); splashVid.currentTime = 0;
+  progressFill.style.width = '0%';
+
+  elHead.style.transition = 'none';
+  elHead.style.opacity = '0';
+  elHead.style.transform = 'translateY(14px)';
+
+  elCta.style.transition = 'none';
+  elCta.style.opacity = '0';
+  elCta.style.transform = 'translateY(14px)';
+
+  // Exit overlay
+  exitOv.style.transition = 'none';
+  exitOv.style.opacity = '0';
+  exitOv.style.pointerEvents = 'none';
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   PLAY SPLASH ENTRY
+═══════════════════════════════════════════════════════════════ */
+function playSplashEntry() {
+  resetSplash();
+
+  /*
+   * Animation phases (all delays relative to the outer 40ms gate):
+   *   Phase 1 — Gradient fade-in:  t=0,       dur=dur*0.45
+   *   Phase 2 — Blob bloom→orbit:  t=dur*0.1, dur=dur*0.62
+   *   Phase 3 — Grid wave:         t=dur*0.08, spread across dist, each cell dur=dur*0.28
+   *   Phase 4 — Content stagger:   t=dur*0.3 (+stagger per element), dur=dur*0.55
+   *   Phase 5 — Video fade-in:     t=contentBase+stagger+contentDur+150 (150ms buffer after CTA settles)
+   */
+  const dur     = 2400;
+  const stagger = 350;
+  const ease    = 'cubic-bezier(.25,.46,.45,.94)';
+  const maxDist = Math.hypot(ROWS / 2, COLS / 2);
+
+  splashTimeout(() => {
+
+    // 1. Gradient layer fade-in (t=0)
+    gradLayer.style.transition = `opacity ${Math.round(dur * 0.45)}ms ease`;
+    gradLayer.style.opacity = '1';
+
+    // 2. Blob bloom (t = dur*0.1)
+    splashTimeout(() => {
+      bloomBlobsToOrbit(ease, Math.round(dur * 0.62), () => startOrbit());
+    }, dur * 0.1);
+
+    // 3. Grid wave from center (starting t = dur*0.08)
+    cells.forEach(cell => {
+      const r = parseInt(cell.dataset.r, 10);
+      const c = parseInt(cell.dataset.c, 10);
+      const dist  = Math.hypot(r - (ROWS-1)/2, c - (COLS-1)/2);
+      const delay = dur * 0.08 + (dist / maxDist) * (dur * 0.65) * 0.7;
+      splashTimeout(() => {
+        cell.style.transition = `opacity ${Math.round(dur * 0.28)}ms ${ease}`;
+        cell.style.opacity = '1';
+      }, delay);
+    });
+
+    // 4. Content stagger (starting t = dur*0.3)
+    const contentBase = dur * 0.3;
+    const contentDur  = Math.round(dur * 0.55);
+
+    const showEl = (el, delay) => {
+      splashTimeout(() => {
+        el.style.transition = `opacity ${contentDur}ms ${ease}, transform ${contentDur}ms ${ease}`;
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, delay);
+    };
+
+    // Video frame stays hidden during animation — fades in with video
+    showEl(elHead, contentBase);
+    showEl(elCta,  contentBase + stagger);
+
+    // Fade in video frame and start playback after all content has settled
+    const videoStartDelay = contentBase + stagger + contentDur + 150;
+    splashTimeout(() => {
+      elVideo.style.transition = `opacity ${contentDur}ms ${ease}, transform ${contentDur}ms ${ease}`;
+      elVideo.style.opacity = '1';
+      elVideo.style.transform = 'translateY(0)';
+      splashVid.play().catch(() => {});
+    }, videoStartDelay);
+
+  }, 40);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TRANSITIONS
+═══════════════════════════════════════════════════════════════ */
+
+// Login → Splash
+function goToSplash() {
+  const loginScreen = document.getElementById('screen-login');
+  const splashScreen = document.getElementById('screen-splash');
+
+  // Cut instantly to black, then splash fades in
+  loginScreen.classList.remove('active');
+
+  splashScreen.style.opacity = '1';
+  splashScreen.style.pointerEvents = 'auto';
+  splashScreen.classList.add('active');
+
+  splashTimeout(() => {
+    playSplashEntry();
+  }, 50);
+}
+
+// Splash → Home
+function goToHome() {
+  const splashScreen = document.getElementById('screen-splash');
+  const homeScreen   = document.getElementById('screen-home');
+
+  // 1. Content exits
+  const exitTr = 'opacity 400ms ease-in, transform 400ms ease-in';
+  elVideo.style.transition = exitTr;
+  elVideo.style.opacity = '0';
+  elVideo.style.transform = 'translateY(20px)';
+
+  elHead.style.transition = exitTr;
+  elHead.style.opacity = '0';
+  elHead.style.transform = 'translateY(20px)';
+
+  elCta.style.transition = exitTr;
+  elCta.style.opacity = '0';
+  elCta.style.transform = 'translateY(20px)';
+
+  // 2. After 350ms: grad → 0, exit overlay → 1
+  splashTimeout(() => {
+    gradLayer.style.transition = 'opacity 600ms ease-in';
+    gradLayer.style.opacity = '0';
+
+    exitOv.style.transition = 'opacity 600ms ease-in';
+    exitOv.style.opacity = '1';
+    exitOv.style.pointerEvents = 'auto';
+  }, 350);
+
+  // 3. After 950ms: switch to home
+  splashTimeout(() => {
+    splashScreen.classList.remove('active');
+    splashScreen.style.opacity = '';
+    splashScreen.style.pointerEvents = '';
+    resetSplash();
+
+    homeScreen.style.opacity = '0';
+    homeScreen.style.transition = 'none';
+    homeScreen.classList.add('active');
+
+    // Two rAFs force a layout recalc before the CSS transition starts, preventing a collapsed/instant transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        homeScreen.style.transition = 'opacity 600ms ease';
+        homeScreen.style.opacity = '1';
+      });
+    });
+  }, 950);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENT LISTENERS
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('continue-btn').addEventListener('click', goToSplash);
+
+document.getElementById('email-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') goToSplash();
+});
+
+document.getElementById('el-cta').addEventListener('click', goToHome);
+
+/* ═══════════════════════════════════════════════════════════════
+   JW PLAYER SIMULATION
+═══════════════════════════════════════════════════════════════ */
+// Auto-transition to home when video ends
+splashVid.addEventListener('ended', goToHome);
+splashVid.addEventListener('timeupdate', () => {
+  if (!splashVid.duration) return;
+  progressFill.style.width =
+    (splashVid.currentTime / splashVid.duration * 100) + '%';
+});
+
+// Click progress bar to seek
+progressTrack.addEventListener('click', function(e) {
+  if (!splashVid.duration) return;
+  const rect = this.getBoundingClientRect();
+  splashVid.currentTime = ((e.clientX - rect.left) / rect.width) * splashVid.duration;
+});
+
+// Settings toggle
+function toggleJwpSettings(e) {
+  e.stopPropagation();
+  settingsPanel.classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  settingsPanel.classList.remove('open');
+});
+
+// Closed captions toggle (visual only — no track in prototype)
+function toggleCC() {
+  document.getElementById('jwp-cc-btn').classList.toggle('active');
+}
+
+// Picture in Picture
+function togglePiP() {
+  if (document.pictureInPictureElement) {
+    document.exitPictureInPicture().catch(() => {});
+  } else {
+    splashVid.requestPictureInPicture().catch(() => {});
+  }
+}
+
+// Fullscreen
+function toggleFullscreen() {
+  const el = document.getElementById('el-video');
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  } else {
+    el.requestFullscreen().catch(() => {});
+  }
+}
+</script>
+
+</body>
+</html>
