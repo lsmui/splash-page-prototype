@@ -1461,8 +1461,16 @@ function playSplashEntry() {
       elVideo.style.opacity = '1';
       elVideo.style.transform = 'translateY(0)';
       splashVid.play().catch(() => {});
-      document.getElementById('captions-track').track.mode = 'showing';
-      document.getElementById('jwp-cc-btn').classList.add('active');
+      function enableCC() {
+        document.getElementById('captions-track').track.mode = 'showing';
+        document.getElementById('jwp-cc-btn').classList.add('active');
+      }
+      // Use canplay to ensure track is ready; fall back to immediate
+      if (splashVid.readyState >= 2) {
+        enableCC();
+      } else {
+        splashVid.addEventListener('canplay', enableCC, { once: true });
+      }
     }, videoStartDelay);
 
   }, 40);
