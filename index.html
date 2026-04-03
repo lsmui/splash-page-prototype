@@ -1553,8 +1553,8 @@ document.getElementById('el-cta').addEventListener('click', goToHome);
 /* ═══════════════════════════════════════════════════════════════
    JW PLAYER SIMULATION
 ═══════════════════════════════════════════════════════════════ */
-// Auto-transition to home when video ends
-splashVid.addEventListener('ended', goToHome);
+// Auto-transition to home 3 seconds after video ends
+splashVid.addEventListener('ended', () => splashTimeout(goToHome, 3000));
 splashVid.addEventListener('timeupdate', () => {
   if (!splashVid.duration) return;
   progressFill.style.width =
