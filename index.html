@@ -877,6 +877,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
       <div id="el-video">
         <video id="splash-video" muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"
           src="splash page video small.mp4">
+          <track id="captions-track" kind="captions" srclang="en" label="English" src="captions.vtt">
         </video>
 
         <!-- JW Player simulation overlay -->
@@ -1584,9 +1585,13 @@ function toggleMute() {
   document.getElementById('jwp-mute-btn').title = splashVid.muted ? 'Unmute' : 'Mute';
 }
 
-// Closed captions toggle (visual only — no track in prototype)
+// Closed captions toggle
 function toggleCC() {
-  document.getElementById('jwp-cc-btn').classList.toggle('active');
+  const track = document.getElementById('captions-track').track;
+  const btn   = document.getElementById('jwp-cc-btn');
+  const isOn  = track.mode === 'showing';
+  track.mode  = isOn ? 'disabled' : 'showing';
+  btn.classList.toggle('active', !isOn);
 }
 
 // Picture in Picture
