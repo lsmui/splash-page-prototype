@@ -904,6 +904,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
               <div class="jwp-progress-fill" id="jwp-progress-fill"></div>
             </div>
             <div class="jwp-controls-row">
+              <!-- Volume -->
+              <button class="jwp-btn" id="jwp-mute-btn" title="Unmute" onclick="toggleMute()">
+                <svg id="jwp-icon-muted" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 7h3l4-3v12l-4-3H3V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M14 7l3 3m0-3l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <svg id="jwp-icon-unmuted" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:none">
+                  <path d="M3 7h3l4-3v12l-4-3H3V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M13 7.5a4 4 0 0 1 0 5M15 5a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
               <!-- Closed captions -->
               <button class="jwp-btn" id="jwp-cc-btn" title="Closed Captions" onclick="toggleCC()">
                 <span class="jwp-cc-label">CC</span>
@@ -1564,6 +1575,14 @@ function toggleJwpSettings(e) {
 document.addEventListener('click', () => {
   settingsPanel.classList.remove('open');
 });
+
+// Mute / unmute
+function toggleMute() {
+  splashVid.muted = !splashVid.muted;
+  document.getElementById('jwp-icon-muted').style.display   = splashVid.muted ? '' : 'none';
+  document.getElementById('jwp-icon-unmuted').style.display = splashVid.muted ? 'none' : '';
+  document.getElementById('jwp-mute-btn').title = splashVid.muted ? 'Unmute' : 'Mute';
+}
 
 // Closed captions toggle (visual only — no track in prototype)
 function toggleCC() {
